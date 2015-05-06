@@ -1,0 +1,66 @@
+import org.ajoberstar.grgit.*
+
+buildscript {
+	repositories {
+    	mavenCentral()
+	}
+
+	dependencies {
+		classpath 'org.ajoberstar:gradle-git:0.12.0'
+	}
+}
+
+plugins {
+    id 'java'
+	id 'idea'
+	id 'eclipse'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project (':../processing/core')
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+version = '1.0'
+
+idea {
+	project {
+	    languageLevel = '1.7'
+	}
+	module {
+		name = 'PS3Eye'
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.2.1'
+}
+
+
+def cloneRepo(repo) {
+	def cloneTo = file(repo.cloneTo)
+
+	if(!cloneTo.exists()) {
+		logger.quiet 'cloning into ' + cloneTo
+		
+		def grgit = Grgit.clone(dir: cloneTo, uri: repo.uri )
+		
+		if(repo.checkout) {
+			logger.quiet 'checking out ' + repo.checkout
+			grgit.checkout(branch: repo.checkout)
+		}
+	} else {
+		logger.quiet 'already cloned ' + cloneTo
+	}
+}
+
+task setup << {
+	gradle.gitDependencies.each() {
+		cloneRepo it
+	}
+}

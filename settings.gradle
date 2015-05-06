@@ -1,0 +1,10 @@
+rootProject.name = 'PS3Eye'
+
+gradle.ext.gitDependencies = [
+	[cloneTo:'../processing', uri:'https://github.com/meta-meta/processing.git', subPath:'/core', checkout:'riftIntegration']
+]
+
+def includes = []
+gradle.ext.gitDependencies.each() { includes << it.cloneTo + (it.subPath ? it.subPath : '') }
+
+include (includes as String[]) 
